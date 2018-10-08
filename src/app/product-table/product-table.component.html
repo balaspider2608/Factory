@@ -1,0 +1,170 @@
+<div class="content-wrapper">
+  <div class="container-fluid" style="margin-top: 3rem;">  
+
+    <!-- Example DataTables Card-->
+    <div class="card mb-3">
+      <div class="card-header">
+        Green OK Bus List
+        <div style=" float:right;">
+        <a href="javascript:void(0)" (click)="openConfigureUpload()" >
+            <i class="fa fa-camera">
+              Upload
+            </i>
+          </a>
+          <a class="font" style=" font-size: 11px;" href="./assets/Documents/multiUpdate_template.xlsx">
+            <img src="./assets/Excel.svg" style="height: 25px;padding-right: 1rem;"> multiUpdate_template.xlsx
+          </a>
+          </div>
+      </div>
+      <div class="card-body">
+        <div class="table-responsive">
+          <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+            <thead>
+              <tr>
+                <th>Id</th>
+                <th>Chassis Series</th>
+                <th>Chassis Number</th>
+                <th>QR Code</th>
+                <th>Mark Location</th>
+                <th>Configure</th>
+                <th>Check List</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let prd of product">
+                <td>{{prd.ProductId}}</td>
+                <td>{{prd.ChassisSeries}}</td>
+                <td>{{prd.ChassisNumber}}</td>
+                <td>
+                    <ngx-qrcode [qrc-element-type]="elementType" [qrc-value] = "GetQR(prd.ChassisSeries,prd.ChassisNumber)">
+                    </ngx-qrcode>
+                    <span class="pull-right"style="display: inline">
+                    <i class="fa fa-print" ></i>
+                   
+                    </span>
+                </td>
+                <td>
+                  <i class="fa fa-fw fa-map-marker" ></i>
+                  <agm-map style="height:150px" [latitude]="lat" [longitude]="lng"><agm-marker [latitude]="lat" [longitude]="lng"></agm-marker></agm-map>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-info" (click)="openConfigure(content,prd.ProductId)">Configure</button>
+                </td>
+                <td>
+                  <button type="button" class="btn btn-info" (click)="openConfigure1(content1,prd.ProductId)">Do Check</button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- /.container-fluid-->
+  <!-- /.content-wrapper-->
+  <footer class="sticky-footer">
+    <div class="container">
+      <div class="text-center">
+        <small>Copyright © VOLVO 2018</small>
+      </div>
+    </div>
+  </footer>
+  <!-- Scroll to Top Button-->
+  <a class="scroll-to-top rounded" href="#page-top">
+    <i class="fa fa-angle-up"></i>
+  </a>
+  <!-- Logout Modal-->
+  <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog" role="document">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="exampleModalLabel">Ready to Leave?</h5>
+          <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+            <span aria-hidden="true">×</span>
+          </button>
+        </div>
+        <div class="modal-body">Select "Logout" below if you are ready to end your current session.</div>
+        <div class="modal-footer">
+          <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+          <a class="btn btn-primary" href="javascript:void(0)" (click)="logout()">Logout</a>
+        </div>
+      </div>
+    </div>
+  </div>
+  <ng-template #content let-c="close" let-d="dismiss" class="modalpop bg-info">
+    <!-- Modal -->
+
+    <div class="modal-header modalpop">
+      <h5 class="modal-title" id="exampleModalLongTitle">Configure for ProductId {{this.ProductId}}</h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="d('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <fieldset class="modal-body" *ngFor="let acti of Activity; let i = index">
+      <legend style="font-size: 1rem;">
+        {{acti.ActivityDescription}}
+      </legend>
+      <div class="row" style="margin-left: 1.5rem !important;">
+        <!-- Default inline 1-->
+        <div class="custom-control custom-radio custom-control-inline">
+          <input type="radio" class="custom-control-input" id="{{acti.ActivityId}}a" name="{{acti.ActivityId}}" value="{{acti.ActivityId}}a" (change)="radiotoggle(acti.ActivityId,'1',this.ProductId)" >
+          <label class="custom-control-label" for="{{acti.ActivityId}}a">Daily</label>
+        </div>
+
+        <!-- Default inline 2-->
+        <div class="custom-control custom-radio custom-control-inline">
+          <input type="radio" class="custom-control-input" id="{{acti.ActivityId}}b" name="{{acti.ActivityId}}" value="{{acti.ActivityId}}b" (change)="radiotoggle(acti.ActivityId,'2',this.ProductId)" >
+          <label class="custom-control-label" for="{{acti.ActivityId}}b">Weekly</label>
+        </div>
+
+        <!-- Default inline 3-->
+        <div class="custom-control custom-radio custom-control-inline">
+          <input type="radio" class="custom-control-input" id="{{acti.ActivityId}}c" name="{{acti.ActivityId}}" value="{{acti.ActivityId}}c"  (change)="radiotoggle(acti.ActivityId,'3',this.ProductId)" >
+          <label class="custom-control-label" for="{{acti.ActivityId}}c">Monthly</label>
+        </div>
+      </div>
+    </fieldset>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="d('Cross click')">Close</button>
+        <button type="button" class="btn btn-primary" (click)="saveNotificationConfig(this.ProductId)">Save</button>
+      </div>
+  </ng-template>
+  <ng-template #content1 let-c="close" let-d="dismiss">
+    <div class="modal-header">
+      <h5 class="modal-title" id="exampleModalLongTitle">Check List for ProductId {{this.ProductId}}</h5>
+      <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="d('Cross click')">
+        <span aria-hidden="true">&times;</span>
+      </button>
+    </div>
+    <mat-selection-list #shoes (selectionChange)="onSelection($event, shoes.selectedOptions)">
+      <mat-list-option *ngFor="let acti of Activity" [value]='acti'>
+          {{acti.ActivityId}}-{{acti.ActivityDescription}}
+      </mat-list-option>
+    </mat-selection-list>
+    <div class="modal-footer">
+        <button type="button" class="btn btn-primary" data-dismiss="modal" (click)="d('Cross click')">Cancle</button>
+      <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="d('Cross click')">Vechicle Delivered</button>
+      <button type="button" class="btn btn-primary" (click)="saveConfig(this.ProductId)">Save</button>
+    </div>
+  </ng-template>
+
+  <ng-template #content2 let-c="close" let-d="dismiss">
+      <div class="modal-header">
+        <h5 class="modal-title" id="exampleModalLongTitle">Upload Chassis List</h5>
+        <button type="button" class="close" data-dismiss="modal" aria-label="Close" (click)="d('Cross click')">
+          <span aria-hidden="true">&times;</span>
+        </button>
+      </div>
+      <div>
+          <div style="padding-left:3rem">
+              <!-- <label for="filePicker">Choose or drag a file:</label><br>
+              <input type="file" id="filePicker" (change)="handleFileSelect($event)"> -->
+              <input type="file" #importFile style="float: left;width: 204px;" accept=".xls,.xlsx,.ods" multiple="false" />
+              <!-- <input type="submit" (click)="onFileChange($event)" value="Upload" style="float: left;" /> -->
+          </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-secondary" data-dismiss="modal" (click)="d('Cross click')">Close</button>
+        <button type="button" class="btn btn-primary" (click)="onFileChange($event)">Upload</button>
+      </div>
+    </ng-template>
